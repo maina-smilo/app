@@ -23,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,6 +55,7 @@ import com.example.mainapp.navigation.ROUTE_LOGIN
 @Composable
 fun registerScreen(navController: NavController){
     var username by remember { mutableStateOf("") }
+    var fullname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("")}
     var confirmpassword by remember { mutableStateOf("") }
@@ -90,14 +92,31 @@ fun registerScreen(navController: NavController){
             label = { Text("Enter Username") },
             placeholder = { Text("Please enter username") },
             leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Person icon") },
-            modifier = Modifier.fillMaxWidth(0.8f))
+            modifier = Modifier.fillMaxWidth(0.8f),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Blue,
+                unfocusedTextColor = Color.Blue,)
+            )
+
+        OutlinedTextField(value = fullname, onValueChange = {fullname=it},
+            label = { Text("Enter Fullname") },
+            placeholder = { Text("Please enter fullname") },
+            leadingIcon = { Icon(Icons.Default.Person, contentDescription = "Person icon") },
+            modifier = Modifier.fillMaxWidth(0.8f),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Blue,
+                unfocusedTextColor = Color.Blue,)
+            )
 
         OutlinedTextField(value = email, onValueChange = {email=it},
             label = { Text("Enter Email") },
             placeholder = { Text("Please enter email") },
             leadingIcon = { Icon(Icons.Default.Email, contentDescription = "Email icon") },
             modifier = Modifier.fillMaxWidth(0.8f),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Blue,
+                unfocusedTextColor = Color.Blue,)
         )
         OutlinedTextField(value = password, onValueChange = {password=it},
             label = { Text("Enter Password") },
@@ -113,7 +132,10 @@ fun registerScreen(navController: NavController){
                 }
             },
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Blue,
+                unfocusedTextColor = Color.Blue,)
         )
         OutlinedTextField(value = confirmpassword, onValueChange = {confirmpassword=it},
             label = { Text("Confirm Password") },
@@ -129,12 +151,23 @@ fun registerScreen(navController: NavController){
                 }
             },
             visualTransformation = if (confirmpasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = Color.Blue,
+                unfocusedTextColor = Color.Blue,)
         )
         Spacer(modifier = Modifier.height(25.dp))
         val context = LocalContext.current
         Button(onClick = {
-            authViewModel.signup(username = username, email = email, password = password, confirmpassword= confirmpassword, navController = navController, context = context)
+            authViewModel.signup(
+                username = username,
+                email = email,
+                password = password,
+                confirmpassword = confirmpassword,
+                navController = navController,
+                context = context,
+                fullname = fullname
+            )
         }, colors = ButtonDefaults.buttonColors(Color.Black),
             modifier = Modifier.fillMaxWidth(0.8f))
         { Text(text = "Register") }

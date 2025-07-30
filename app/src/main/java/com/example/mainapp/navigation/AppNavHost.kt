@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mainapp.ui.theme.screens.dashboard.DashboardScreen
 import com.example.mainapp.ui.theme.screens.login.loginScreen
+import com.example.mainapp.ui.theme.screens.patients.AddPatientScreen
 import com.example.mainapp.ui.theme.screens.register.registerScreen
 
 @Composable
@@ -15,6 +16,7 @@ fun AppNavHost(navController: NavHostController= rememberNavController(), startD
         composable(ROUTE_REGISTER){ registerScreen(navController) }
         composable(ROUTE_LOGIN){ loginScreen(navController) }
         composable(ROUTE_DASHBOARD){ DashboardScreen(navController) }
+        composable(ROUTE_ADDPATIENT){ AddPatientScreen(navController) }
 
     }
 

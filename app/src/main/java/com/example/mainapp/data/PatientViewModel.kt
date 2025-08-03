@@ -19,6 +19,8 @@ import okhttp3.RequestBody
 import java.io.InputStream
 
 class PatientViewModel:ViewModel() {
+    val cloudinaryUrl = "https://api.cloudinary.com/v1_1/dz7ejfgbq/image/upload"
+    val uploadPreset = "app_images"
     fun uploadPatient(imageUri: Uri?, name: String, gender: String, nationality: String, age: String, diagnosis: String, context: Context){
         viewModelScope.launch ( Dispatchers.IO ){
             try{
@@ -51,12 +53,12 @@ class PatientViewModel:ViewModel() {
         val requestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
             .addFormDataPart("file", "image.jpg",
                 RequestBody.create("image/*".toMediaTypeOrNull(),fileBytes))
-            .addFormDataPart("upload_present", uploadPresent).build()
+            .addFormDataPart("upload_preset", uploadPreset).build()
         val request = Request.Builder().url(cloudinaryUrl).post(requestBody).build()
         val response = OkHttpClient().newCall(request).execute()
         if(!response.isSuccessful) throw Exception("Upload failed")
         val responseBody = response.body?.string()
-        val secureurl = Regex("\"secure_url\":\"(.*?)\"").find(responseBody ?: "")?.groupValues?.get(1)
-        return secureurl ?: throw Exception("Upload failed")
+        val secureUrl = Regex("\"secure_url\":\"(.*?)\"").find(responseBody ?: "")?.groupValues?.get(1)
+        return secureUrl ?: throw Exception("Upload failed")
     }
 }

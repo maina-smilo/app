@@ -146,7 +146,8 @@ fun DashboardScreen(navController: NavController) {
 
             Row (modifier = Modifier.wrapContentWidth()) {
                 Card(
-                    modifier = Modifier.padding(10.dp).clickable { },
+                    modifier = Modifier.padding(10.dp).clickable {navController.navigate(
+                        ROUTE_ADDPATIENT) },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(Color.White)
                 ) {

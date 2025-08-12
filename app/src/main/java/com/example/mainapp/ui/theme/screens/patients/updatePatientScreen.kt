@@ -1,12 +1,15 @@
 package com.example.mainapp.ui.theme.screens.patients
 
+
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,9 +19,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,26 +47,55 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.mainapp.R
 import com.example.mainapp.data.PatientViewModel
+import com.example.mainapp.models.Patient
 import com.example.mainapp.navigation.ROUTE_DASHBOARD
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.tasks.await
 
 @Composable
-fun AddPatientScreen(navController: NavController){
+fun UpdatePatientScreen(navController: NavController, patientId:String){
+
+    val patientViewModel: PatientViewModel = viewModel()
+    var patient by remember { mutableStateOf<Patient?>(null) }
     var name by remember { mutableStateOf("") }
     var gender by remember { mutableStateOf("") }
-    var next_of_kin by remember { mutableStateOf("") }
     var phonenumber by remember { mutableStateOf("") }
+    var next_of_kin by remember { mutableStateOf("") }
     var nationality by remember { mutableStateOf("") }
     var age by remember { mutableStateOf("") }
     var diagnosis by remember { mutableStateOf("") }
     val imageUri = rememberSaveable() { mutableStateOf<Uri?>(null) }
-    val patientViewModel: PatientViewModel = viewModel()
+
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
-        uri: Uri? -> uri?.let { imageUri.value=it }
+        it?.let { uri -> imageUri.value = uri  }
     }
     val context = LocalContext.current
 
+    LaunchedEffect(patientId) {
+        val ref = FirebaseDatabase.getInstance().getReference("Patients").child(patientId)
+        val snapshot = ref.get().await()
+        patient = snapshot.getValue(Patient::class.java)?.apply{
+            id = patientId
+        }
+        patient?.let {
+            name = it.name?:""
+            gender = it.gender?:""
+            phonenumber = it.phonenumber?:""
+            next_of_kin = it.next_of_kin?:""
+            nationality = it.nationality?:""
+            age = it.age.toString()
+            diagnosis = it.diagnosis?:""
+        }
 
-    Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(15.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    }
+    if (patient==null){
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center){ CircularProgressIndicator() }
+        return
+    }
+
+
+    Column(modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(15.dp)) {
         Text(
             text = "ADD NEW PATIENT",
             fontSize = 26.sp,
@@ -126,14 +160,12 @@ fun AddPatientScreen(navController: NavController){
         )
         Row (modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween){
-            Button(onClick = {navController.navigate(ROUTE_DASHBOARD)}){ Text(text = "Go Back") }
-            Button(onClick = {patientViewModel.uploadPatient(imageUri.value, name, gender, phonenumber,nationality, age, diagnosis, next_of_kin,context, navController)}){ Text(text = "Save Patient") }
+            Button(onClick = {navController.popBackStack()}){ Text(text = "Go Back") }
+            Button(onClick = {
+                patientViewModel.updatePatient(patientId,imageUri.value, name, gender, nationality,age,phonenumber, diagnosis, next_of_kin,context, navController )
+                navController.navigate(ROUTE_DASHBOARD)
+            }){ Text(text = "Update") }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun AddPatientScreenPreview(){
-    AddPatientScreen(rememberNavController())
-}

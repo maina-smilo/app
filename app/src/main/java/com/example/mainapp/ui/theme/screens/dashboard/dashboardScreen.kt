@@ -3,6 +3,7 @@ package com.example.mainapp.ui.theme.screens.dashboard
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PersonAddAlt1
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -47,6 +50,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.mainapp.R
 import com.example.mainapp.navigation.ROUTE_ADDPATIENT
+import com.example.mainapp.navigation.ROUTE_DASHBOARD
+import com.example.mainapp.navigation.ROUTE_LOGIN
+import com.example.mainapp.navigation.ROUTE_VIEWPATIENT
+import com.google.firebase.auth.FirebaseAuth
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,7 +92,7 @@ fun DashboardScreen(navController: NavController) {
     })
     { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            Image(painter = painterResource(id = R.drawable.background),
+            Image(painter = painterResource(id = R.drawable.golden),
                 contentDescription = "background image",
                 modifier = Modifier.fillMaxWidth().height(750.dp),
                 contentScale = ContentScale.FillBounds)
@@ -106,32 +113,47 @@ fun DashboardScreen(navController: NavController) {
                     IconButton(onClick = {}) {
                         Icon(Icons.Filled.Person, contentDescription = "Person")
                     }
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        navController.navigate(ROUTE_LOGIN){
+                        popUpTo(ROUTE_DASHBOARD){inclusive = true}}
+                    }) {
                         Icon(Icons.Filled.AccountCircle, contentDescription = "Logout")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Magenta,
+                    containerColor = Color.Cyan,
                     titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White,
-                    actionIconContentColor = Color.White
+                    navigationIconContentColor = Color.Black,
+                    actionIconContentColor = Color.Black
                 )
             )
             Row (modifier = Modifier.wrapContentWidth()){
                 Card (
-                    modifier = Modifier.padding(10.dp).clickable { navController.navigate(
+                    modifier = Modifier.padding(20.dp).clickable { navController.navigate(
                         ROUTE_ADDPATIENT) },
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(Color.White)
+                    colors = CardDefaults.cardColors(Color.White),
+
                 ){
                     Box(modifier = Modifier.height(100.dp).padding(20.dp), contentAlignment = Alignment.Center) {
+                        Column (horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center){
+                            Icon(
+                                imageVector = Icons.Default.PersonAddAlt1,
+                                contentDescription = "Add Patient",
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
                         Text(text = "Add Patient",)
 
                     }
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Card (
-                    modifier = Modifier.padding(20.dp).clickable {  },
+                    modifier = Modifier.padding(20.dp).clickable {navController.navigate(
+                        ROUTE_VIEWPATIENT)  },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(Color.White)
                 ){
@@ -162,7 +184,8 @@ fun DashboardScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.width(30.dp))
                 Card(
-                    modifier = Modifier.padding(10.dp).clickable { },
+                    modifier = Modifier.padding(10.dp).clickable { navController.navigate(
+                        ROUTE_VIEWPATIENT) },
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(Color.White)
                 ) {
